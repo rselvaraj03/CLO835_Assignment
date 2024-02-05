@@ -32,7 +32,7 @@ jobs:
         ECR_REPOSITORY: rselvaraj03
         IMAGE_TAG: v0.1
       run: |
-        cd clo835_fall2022_assignment1-master
+        cd clo835_fall2022_assignment1-master/clo835_fall2022_assignment1-master
         ls -ltra
         
         # Build and push image for mysql db

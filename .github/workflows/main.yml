@@ -1,0 +1,46 @@
+name: Deploy docker images to ECR
+
+on: 
+  push:
+    branches: [ main ]
+
+jobs:
+  
+  build:
+    
+    name: Build Images
+    runs-on: ubuntu-latest
+
+   
+    steps:
+
+    - name: Check out code
+      uses: actions/checkout@v3
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+        AWS_REGION: us-east-1
+
+    - name: Build, tag, and push images to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: rselvaraj03
+        IMAGE_TAG: v0.1
+      run: |
+        cd clo835_fall2022_assignment1-master/clo835_fall2022_assignment1-master
+        ls -ltra
+        
+        # Build and push image for mysql db
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:db_$IMAGE_TAG -f Dockerfile_mysql .
+        
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:db_$IMAGE_TAG
+
+        # Build and push image for application
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:app_$IMAGE_TAG -f Dockerfile .
+        
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:app_$IMAGE_TAG
